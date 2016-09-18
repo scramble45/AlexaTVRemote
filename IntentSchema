@@ -1,0 +1,18 @@
+{
+  "intents": [
+    {
+      "intent": "TelevisionIntent",
+      "slots": [
+        {
+          "name": "Control",
+          "type": "Control_List"
+        },
+        {
+          "name": "Channel",
+          "type": "AMAZON.NUMBER"
+        }
+        
+      ]
+    }
+  ]
+}
