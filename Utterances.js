@@ -1,1 +1,0 @@
-TelevisionIntent {Control}
