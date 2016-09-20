@@ -1,8 +1,14 @@
 var http = require('http'); // if going through a proxy that uses SSL change to "require('https');"
+var net = require('net');
 
-var local_ip = 'some_website';
+var local_ip = 'somewebsite';
 
-var APP_ID = "amzn1.ask.skill.[yourID]";
+var APP_ID = "amzn1.ask.skill.[yourIDHere]";
+
+// Socket Connection
+var HOST = local_ip;
+var PORT = 6969;
+
 
 /*
 The AlexaSkill prototype and helper functions
@@ -30,6 +36,33 @@ TVControl.prototype.intentHandlers = {
             response.tell("Sure thing");
         };
         
+        // Socket Connection
+        var tcpsocketMSG = function (data) {
+			var client = new net.Socket();
+			var newMsg = data;
+
+			client.connect(PORT, HOST, function() {
+			    client.write(newMsg+'\r\n');
+			});
+
+			// Add a 'data' event handler for the client socket
+			// data is what the server sent to this socket
+			client.on('data', function(data) {
+
+			    console.log('DATA: ' + data + '\r\n');
+			    satisfyAlexa();
+			    // Close the client socket completely
+			    client.destroy();
+
+			});
+
+			// Add a 'close' event handler for the client socket
+			client.on('close', function() {
+			    console.log('Connection closed');
+			});
+
+		}
+
         // Obtain User Intent
         switch(intent.slots.Control.value) {
                 
@@ -41,7 +74,7 @@ TVControl.prototype.intentHandlers = {
 				case "on":
 				case "turn on":
 				case "turn off":
-              		  path = '/power';
+              		  tcpsocketMSG('power');
         		break;
            		
 				case "volume up":
@@ -49,7 +82,7 @@ TVControl.prototype.intentHandlers = {
 				case "turn up the volume":
 				case "turn volume up":
 				case "increase volume":
-              		  path = '/volumeup';
+              		  tcpsocketMSG('volumeup');
         		break;
 				
 				case "volume down":
@@ -57,7 +90,7 @@ TVControl.prototype.intentHandlers = {
 				case "turn down the volume":
 				case "turn volume down":
 				case "decrease volume":
-              		  path = '/volumedown'
+              		  tcpsocketMSG('volumedown');
         		break;
 				
 				case "input 1":
@@ -72,7 +105,7 @@ TVControl.prototype.intentHandlers = {
 				case "switch source to one":
 				case "switch to source 1":
 				case "switch to source one":
-                      path = '/playstation';
+                      tcpsocketMSG('source1');
         		break;
 				
 				case "input 2":
@@ -96,7 +129,7 @@ TVControl.prototype.intentHandlers = {
 				case "switch to source to":
 				case "switch to source too":
 				case "switch to source two":
-              		  path = '/nintendo';
+              		  tcpsocketMSG('source2');
         		break;
 				
 				case "input 3":
@@ -111,7 +144,7 @@ TVControl.prototype.intentHandlers = {
 				case "switch source to three":
 				case "switch to source 3":
 				case "switch to source three":
-              		  path = '/laptop';
+              		  tcpsocketMSG('source3');
         		break;
 				
 				default:
@@ -123,19 +156,9 @@ TVControl.prototype.intentHandlers = {
                          console.log('Something else happend');
                       }		
                 break;
-
-				
         } 
-		var options = {
-                     host: local_ip,
-                     port: 9001, // default port for DTV interface
-                     path: '' + path, // Modify if path is prefixed 
-                     method: 'GET' //, //(remove first comment slashes if using the "auth" option below)
-					 // auth: 'username:password' // this is used if going through authenticated proxy (this is BASIC AUTH)
-                    };
-          var req = http.request(options, satisfyAlexa);
-          req.end();						
-        }
+					
+    }
 }
 
 
