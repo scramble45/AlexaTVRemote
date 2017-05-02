@@ -150,7 +150,7 @@ TVControl.prototype.intentHandlers = {
 				default:
                 
                         if (intent.slots.Channel.value == null) {
-                         response.tell("I didn't understand you, could your repeat that?");
+                         response.tell("I didn't understand you, could you repeat that?");
                       }
 						else {
                          console.log('Something else happend');
